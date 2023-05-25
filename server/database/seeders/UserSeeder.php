@@ -18,14 +18,16 @@ class UserSeeder extends Seeder
             'email' => 'admin@mail.com',
             'phone' => '8111111',
             'password' => 'admin',
-            'otp' => 11111
+            'otp' => 11111,
+            'status' => 'active'
         ]);
         User::factory()->create([
             'name' => 'Willem',
             'email' => 'willem@test.com',
             'phone' => '81234567',
             'password' => 'password',
-            'otp' => 12345
+            'otp' => 12345,
+            'status' => 'active'
         ]);
 
         User::factory()->create([
@@ -33,7 +35,8 @@ class UserSeeder extends Seeder
             'email' => 'brian@test.com',
             'phone' => '87654321',
             'password' => 'password',
-            'otp' => 54321
+            'otp' => 54321,
+            'status' => 'active'
         ]);
     }
 }

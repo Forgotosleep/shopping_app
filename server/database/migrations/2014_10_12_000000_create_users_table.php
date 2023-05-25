@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('password');
             $table->string('otp')->nullable();
+            $table->enum('status', ['active', 'inactive', 'banned'])->default('inactive');
             $table->timestamp('verified_at')->nullable();
             $table->rememberToken();
             $table->softDeletes();
