@@ -92,4 +92,8 @@ class CommonHelpers
 
     return round($d, 1);
   }
+
+  public static function slugGenerator($string) {
+    return $string; // TODO Make an actual Slug Generator
+  }
 }

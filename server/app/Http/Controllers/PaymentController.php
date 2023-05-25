@@ -12,7 +12,16 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        //
+    }
+
+    public function getPaymentMethods()
+    {
+        try {
+            $data = Payment::where('status', 1)->get(['id', 'name', 'value']);
+            return response()->json(\Response::success('Payment Method data successful', $data), 200);
+        } catch (\Throwable $e) {
+            return response()->json(\Response::error('Failed to fetch payment method data', $e), 500);
+        }
     }
 
     /**

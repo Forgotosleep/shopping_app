@@ -14,7 +14,7 @@ class MerchantSeeder extends Seeder
     public function run(): void
     {
         Merchant::factory()->create([
-            'user_id' => 1,
+            'user_id' => 2,
             'name' => 'Willem Fisheries',
             'description' => 'The freshest fish',
             'balance' => 100000,

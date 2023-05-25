@@ -32,24 +32,13 @@ class UserController extends Controller
                 ['status', 'active'] 
             ])->withTrashed()->first();
 
-            error_log('HERE!');
-            error_log($user);
-            // error_log(Hash::check($credentials['password'], $user->password));
-            error_log($user && Hash::check($credentials['password'], $user->password));
-            // error_log(Auth::guard('api')->attempt(['password' => $credentials['password'], 'email' => $credentials['email']]));
-
             if(!$user || $user->deleted_at) {  // Login Failed
                 return response()->json(\Response::error_without_data("Invalid credentials", ["error" => "Invalid credentials"]), 400);
             }
             elseif($user && Hash::check($credentials['password'], $user->password)) {  // Login Success
-                // $data = Auth::guard('web')->attempt($credentials);  // Laravel Session
-                // Auth::login($user);
-                // error_log('WHER!!!');
-                // error_log($data);
                 $token = $user->createToken('web');
                 return response()->json(\Response::success("Login Successful", [
-                    "token" => $token,
-                    "data" => Auth::user()
+                    "token" => $token->plainTextToken,
                 ]), 200);
             }
             else {  // Password wrong
@@ -61,6 +50,9 @@ class UserController extends Controller
         }
     }    
 
+    /**
+     * Logouts the User by deleting *ALL* of their login tokens
+     */
     public function logout(Request $request) {
         try {
             if($checkUser = Auth::user()) {
@@ -140,26 +132,20 @@ class UserController extends Controller
         return response()->json(\Response::success("Success register", $user), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
+    public function fetchLoggedInData(Request $request) {
+        try {
+            if($checkUser = Auth::user()) {
+                return response()->json(\Response::success('User data fetch successful', data: $checkUser->only(['id', 'name', 'email', 'status'])), 200);        
+            }; 
+        } catch (\Throwable $e) {
+            return response()->json(\Response::error('Failed to fetch user data', $e), 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
     {
         //
     }
