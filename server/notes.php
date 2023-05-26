@@ -14,13 +14,6 @@
                     * Logout -OK!
                     * Register -OK!
                     * Fetch User Data -OK!
-                - TRX
-                    * Create TRX 
-                        - Use COMMIT/ROLLBACK!
-                    * Read TRX by User
-                    * Read TRX by Merchant
-                    * Update TRX status
-                    * Delete TRX (optional)
                 - Merchant
                     * Read Merchant Data -OK!
                     * Register User as Merchant -OK!
@@ -32,6 +25,13 @@
                     * Fetch Products by Merchant -OK!
                     * Show/hide Product -OK!
                     * Create Product -OK!
+                - TRX
+                    * Create TRX 
+                        - Use COMMIT/ROLLBACK!
+                    * Read TRX by User
+                    * Read TRX by Merchant
+                    * Update TRX status
+                    * Delete TRX (optional)
                 - Cart (Single Cart per User)  // TODO Make multiple cart implementation
                     * Fetch Cart by User
                     * Fetch Cart Detail
