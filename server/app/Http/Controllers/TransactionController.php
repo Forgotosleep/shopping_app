@@ -2,17 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
+use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Merchant;
+use App\Models\Transaction;
 
 class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function listByUser()
     {
-        //
+        try {
+            $loggedIn = Auth::user();
+            $trx = Transaction::where('user_id', $loggedIn->id)->get();
+            return response()->json(\Response::success('Transaction fetch successful', $trx->only('id', 'user_id', 'merchant_id', 'total_price', 'status')), 200);
+        } catch (\Throwable $e) {
+            
+            return response()->json(\Response::error('Internal Server Error', $e), 500);
+        }
+    }
+
+    public function listByMerchant() {
+        try {
+            $loggedIn = Auth::user();
+            if(!$merchant = Merchant::where('user_id', $loggedIn->id)->first()) {
+                return response()->json(\Response::error('Unauthorized. Not a Merchant'), 401);
+            }
+            $trx = Transaction::where('user_id', $merchant->id)->get();
+            return response()->json(\Response::success('Transaction fetch successful', $trx->only('id', 'user_id', 'merchant_id', 'total_price', 'status')), 200);
+        } catch (\Throwable $e) {
+            
+            return response()->json(\Response::error('Internal Server Error', $e), 500);
+        }
     }
 
     /**
@@ -20,7 +44,19 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        
+        try {
+            DB::beginTransaction();
+            $loggedIn = Auth::user();
+
+            // TODO Insert TRX creation by using Cart as its base
+            
+
+            DB::commit();
+            return response()->json(\Response::success('Transaction creation successful'), 201);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(\Response::error('Internal Server Error', $e), 500);
+        }
     }
 
     /**

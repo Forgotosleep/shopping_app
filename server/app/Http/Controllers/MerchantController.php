@@ -50,7 +50,7 @@ class MerchantController extends Controller
                 'description' => $request->description,
                 'balance' => 0,
                 'slug' => $slug,
-                'status' => 'active'  // defaults to active. In Production, should be 'inactive'.
+                'status' => 'active'  // TODO defaults to active. In Production, should be 'inactive'.
             ]);
 
             if(!$newMerchant) {

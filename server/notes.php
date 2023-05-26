@@ -32,6 +32,12 @@
                     * Fetch Products by Merchant -OK!
                     * Show/hide Product -OK!
                     * Create Product -OK!
+                - Cart (Single Cart per User)  // TODO Make multiple cart implementation
+                    * Fetch Cart by User
+                    * Fetch Cart Detail
+                    * Add Product to Cart
+                    * Remove Product from Cart
+                    * Change Qty of Product in Cart
         - Test it out
     
     Useful commands:

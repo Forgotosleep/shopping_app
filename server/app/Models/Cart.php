@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Transaction extends Model
+class Cart extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        // 'unique_id',
+        'trx_id',
         'user_id',
-        'merchant_id',
-        'cart_id',
+        'product_id',
+        'quantity',
         'total_price',
         'status',
     ];
@@ -24,8 +24,13 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-	public function merchant(): \Illuminate\Database\Eloquent\Relations\belongsTo
-	{
-		return $this->belongsTo(Merchant::class, 'merchant_id');
-	}
+    public function transaction(): \Illuminate\Database\Eloquent\Relations\belongsTo
+    {
+        return $this->belongsTo(Transaction::class, 'trx_id');
+    }
+
+    public function product(): \Illuminate\Database\Eloquent\Relations\belongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }
