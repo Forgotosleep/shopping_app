@@ -15,7 +15,8 @@
                     * Register -OK!
                     * Fetch User Data -OK!
                 - TRX
-                    * Create TRX
+                    * Create TRX 
+                        - Use COMMIT/ROLLBACK!
                     * Read TRX by User
                     * Read TRX by Merchant
                     * Update TRX status
@@ -26,9 +27,11 @@
                 - Payment
                     * Fetch Payment Method -OK!
                 - Product
-                    * Fetch Products All 
-                    * Fetch Products by Merchant
-                    * Show/hide Product
+                    * Fetch Products All -OK!
+                        - Add in Queries to sort and filter based on the query -OK!
+                    * Fetch Products by Merchant -OK!
+                    * Show/hide Product -OK!
+                    * Create Product -OK!
         - Test it out
     
     Useful commands:

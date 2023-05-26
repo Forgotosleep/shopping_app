@@ -45,14 +45,14 @@ Route::Group(['namespace' => 'api', 'middleware' => 'auth:sanctum'], function ()
     // Product Routes
     Route::Group(['prefix' => 'product'], function() {
         Route::post('new', [ProductController::class, 'store']);
-        Route::patch('update', [ProductController::class, 'update']);
+        Route::post('update', [ProductController::class, 'update']);
         Route::delete('delete', [ProductController::class, 'destroy']);
     });
 
     // Transaction Routes
     Route::Group(['prefix' => 'transaction'], function() {
         Route::post('new', [TransactionController::class, 'store']);
-        Route::patch('update', [TransactionController::class, 'update']);
+        Route::post('update', [TransactionController::class, 'update']);
         Route::delete('delete', [TransactionController::class, 'destroy']);
     });
 
