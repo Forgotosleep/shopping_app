@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Merchant;
 use App\Models\Product;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -16,7 +17,10 @@ class CartController extends Controller
     {
         try {
             $loggedIn = \Auth::user();
-            $cart = Cart::where('user_id', $loggedIn->id)->get();
+            $cart = Cart::where([
+                ['user_id', $loggedIn->id],
+                ['transaction_id', null]  // No transaction ID means the Cart is not finalized into a Transaction yet
+            ])->get();
             return response()->json(\Response::success('Cart fetch successful', $cart), 200);
         } catch (\Throwable $e) {
             
@@ -44,25 +48,37 @@ class CartController extends Controller
                 return response()->json(\Response::error('Product not found'), 404);
             }
 
+            // error_log('HERE! 1');
+
             // Checks if product already exists in Cart or not
             $checkCart = Cart::where([
                 ['user_id', $loggedIn->id],
                 ['product_id', $request->idProduct]
-            ]);
-            if(!$checkCart[0]) {
-                return response()->json(\Response::error('Product already exists in this User\'s Cart'), 400);
+            ])->first();
+
+            // dd($checkCart);
+
+            if($checkCart) {
+                // TODO Consider returning an error or adding quantity of the existing product in the cart
+                return response()->json(\Response::error('Product already exists in this user\'s Cart'), 400);
+            }
+
+            // Merchant Check
+            $isMerchant = Merchant::where('user_id', $loggedIn->id)->first();
+            if($isMerchant && $product->merchant_id == $isMerchant->id) {
+                return response()->json(\Response::error('Please don\'t buy your own product'), 400);
             }
 
             // Creates Product entry in Cart
             $cart = Cart::create([
-                'trx_id' => $request->idTrx,
                 'user_id' => $loggedIn->id,
                 'product_id' => $product->id,
-                'quantity' => $request->qty,
-                'total_price' => ($request->qty * $product->price),
-                'status' => 'active'
+                'quantity' => $request->quantity,
+                'price' => ($request->quantity * $product->price),
             ]);
-            return response()->json(\Response::success('Add product to cart successful', $cart), 201);
+
+            $currentCart = $cart->where('user_id', $loggedIn->id)->get(['id', 'product_id', 'quantity', 'price']);  // Gets User's current Cart
+            return response()->json(\Response::success('Add product to cart successful', $currentCart), 201);
 
         } catch (\Throwable $e) {
             return response()->json(\Response::error('Internal Server Error', $e), 500);
@@ -77,20 +93,25 @@ class CartController extends Controller
         try {
             $loggedIn = \Auth::user();
             $cart = Cart::where([
+                ['id', $request->idCart],
                 ['user_id', $loggedIn->id],
-                ['id', $request->idCart]
+                ['transaction_id', null]  // No transaction ID means the Cart is not finalized into a Transaction yet
             ])->first();
+
+            $cart = Cart::find($request->idCart);
+
             if(!$cart) {
                 return response()->json(\Response::error('Cart not found'), 404);
             }
 
-            if($request->qty == 0) {
+            if($request->quantity == 0) {
                 $cart->delete();
             }
             else {
-                $cart->update([
-                    'quantity', $request->qty
-                ]);            
+                $singleProductPrice = $cart->price / $cart->quantity;  // Made this to avoid another SQL query. But if the formula for 'price' in tampered with (e.g. inserted not as PURE PRODUCT PRICE, but after discount or smth, this will become unreliable. Something to think about)
+                $cart->quantity = $request->quantity;
+                $cart->price = $singleProductPrice * $request->quantity;
+                $cart->save(); 
             }
             return response()->json(\Response::success('Cart Product quantity modified successfully', $cart), 200);
 

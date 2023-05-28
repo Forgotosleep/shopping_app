@@ -1,12 +1,14 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\MerchantController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,10 +64,18 @@ Route::Group(['namespace' => 'api', 'middleware' => 'auth:sanctum'], function ()
         Route::post('/register', [MerchantController::class, 'registerAsMerchant']);
     });
 
-     // Payment Routes - No Login
+     // Payment Routes
      Route::Group(['prefix' => 'payment'], function() {
         Route::post('new', [PaymentController::class, 'store']);
         Route::patch('update', [PaymentController::class, 'update']);
         Route::delete('delete', [PaymentController::class, 'destroy']);
     });    
+
+    // Cart Routes
+    Route::Group(['prefix' => 'cart'], function() {
+        Route::get('/', [CartController::class, 'index']);
+        Route::post('add', [CartController::class, 'store']);
+        Route::post('edit', [CartController::class, 'edit']);
+        Route::delete('/', [CartController::class, 'deleteItem']);
+    });
 });

@@ -39,8 +39,11 @@
                     * Remove Product from Cart
                     * Change Qty of Product in Cart
         - Test it out
+
+        - Create Job/Scheduler to clean out soft-deleted Cart entries to reduce DB load
     
     Useful commands:
         php artisan migrate:reset && php artisan migrate && php artisan db:seed
-        composer dump-autoload && php artisan serve
+        php artisan migrate:fresh --seed
+        composer dump-autoload && php artisan cache:clear && php artisan serve
  -->

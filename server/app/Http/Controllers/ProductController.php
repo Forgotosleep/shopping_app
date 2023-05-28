@@ -120,8 +120,6 @@ class ProductController extends Controller
                 return response()->json(\Response::error('Not your product'), 401);
             }
 
-            error_log('HERE!');
-
             $product->update([
                 'name' => $request->name ?? $product->name,
                 'description' => $request->description ?? $product->description,

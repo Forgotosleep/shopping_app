@@ -15,8 +15,7 @@ class Cart extends Model
         'user_id',
         'product_id',
         'quantity',
-        'total_price',
-        'status',
+        'price',
     ];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\belongsTo

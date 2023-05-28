@@ -42,8 +42,6 @@ class MerchantController extends Controller
                 return response()->json(\Response::error('Already a Merchant'), 400);
             }
 
-            error_log($merchantCheck);
-
             $newMerchant = Merchant::create([
                 'user_id' => $loggedIn->id,
                 'name' => $request->name,

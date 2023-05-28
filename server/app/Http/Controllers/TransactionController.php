@@ -48,7 +48,8 @@ class TransactionController extends Controller
             DB::beginTransaction();
             $loggedIn = Auth::user();
 
-            // TODO Insert TRX creation by using Cart as its base
+            // TODO Insert TRX creation by using Cart as its base. Remember to ADD IN TRANSACTION ID for the affected Cart!
+
             
 
             DB::commit();
