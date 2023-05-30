@@ -20,7 +20,7 @@ class CartController extends Controller
             $cart = Cart::where([
                 ['user_id', $loggedIn->id],
                 ['trx_id', null]  // No transaction ID means the Cart is not finalized into a Transaction yet
-            ])->get();
+            ])->get(['id', 'merchant_id', 'product_id', 'quantity', 'price', 'selected']);
             return response()->json(\Response::success('Cart fetch successful', $cart), 200);
         } catch (\Throwable $e) {
             
@@ -61,11 +61,12 @@ class CartController extends Controller
             $cart = Cart::create([
                 'user_id' => $loggedIn->id,
                 'product_id' => $product->id,
+                'merchant_id' => $product->merchant_id,
                 'quantity' => $request->quantity,
                 'price' => ($request->quantity * $product->price),
             ]);
 
-            $currentCart = $cart->where('user_id', $loggedIn->id)->get(['id', 'product_id', 'quantity', 'price']);  // Gets User's current Cart
+            $currentCart = $cart->where('user_id', $loggedIn->id)->get(['id', 'merchant_id', 'product_id', 'quantity', 'price', 'selected']);  // Gets User's current Cart
             return response()->json(\Response::success('Add product to cart successful', $currentCart), 201);
 
         } catch (\Throwable $e) {
@@ -101,7 +102,7 @@ class CartController extends Controller
                 $cart->price = $singleProductPrice * $request->quantity;
                 $cart->save(); 
             }
-            return response()->json(\Response::success('Cart Product quantity modified successfully', $cart), 200);
+            return response()->json(\Response::success('Cart Product quantity modified successfully', $cart->only('id', 'merchant_id', 'product_id', 'quantity', 'price', 'selected')), 200);
 
         } catch (\Throwable $e) {
             return response()->json(\Response::error('Internal Server Error', $e), 500);
@@ -152,8 +153,6 @@ class CartController extends Controller
         }
     }
 
-
-
     public function deleteItem(Request $request)
     {
         try {
@@ -167,7 +166,7 @@ class CartController extends Controller
             }
 
             $cart->delete();            
-            return response()->json(\Response::success('Cart Product deleted successfully', $cart), 200);
+            return response()->json(\Response::success('Cart Product deleted successfully', $cart->only('id', 'merchant_id', 'product_id', 'quantity', 'price', 'selected')), 200);
             
         } catch (\Throwable $e) {
             return response()->json(\Response::error('Internal Server Error', $e), 500);

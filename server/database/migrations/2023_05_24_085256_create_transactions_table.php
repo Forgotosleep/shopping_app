@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             // $table->uuid('unique_id')->unique();  // TODO Use UUID instead of ID
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('merchant_id')->constrained('merchants')->cascadeOnDelete();
+            // $table->foreignId('merchant_id')->constrained('merchants')->cascadeOnDelete();
+            $table->text('cart_ids')->nullable();  // Array of Cart IDs
             $table->integer('total_price');
             $table->enum('status', ['pending', 'paid', 'confirmed', 'delivered', 'finished']);
             $table->softDeletes();

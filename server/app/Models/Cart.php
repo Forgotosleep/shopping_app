@@ -11,9 +11,10 @@ class Cart extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'trx_id',
         'user_id',
         'product_id',
+        'merchant_id',
+        'trx_id',
         'quantity',
         'price',
         'selected'
@@ -32,5 +33,10 @@ class Cart extends Model
     public function product(): \Illuminate\Database\Eloquent\Relations\belongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function merchant(): \Illuminate\Database\Eloquent\Relations\belongsTo
+    {
+        return $this->belongsTo(Merchant::class, 'merchant_id');
     }
 }

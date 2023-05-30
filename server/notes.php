@@ -40,6 +40,8 @@
         - Test it out
 
         - Create Job/Scheduler to clean out soft-deleted Cart entries to reduce DB load
+        - Pagination. Add pagination, especially for large data such as Product and Merchant. Along with Transaction, but not to Cart.
+        - Should change Cart's 'price' column into something else. It is ambigous, and it should describe it's actually Price * QUantity of the products in the Cart. For now, Price it is.
     
     Useful commands:
         php artisan migrate:reset && php artisan migrate && php artisan db:seed

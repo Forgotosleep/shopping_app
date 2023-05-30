@@ -1,5 +1,8 @@
 <?php
 
+/* DEPRECIATED */
+// Changed Transaction table model's cart_id to be an array of IDs
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

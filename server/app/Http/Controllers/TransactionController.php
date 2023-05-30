@@ -11,6 +11,17 @@ use App\Models\Cart;
 
 class TransactionController extends Controller
 {
+
+    function displayProducts($trxId) {
+        try {
+            
+            // TODO Fetches Products grouped by Merchants in a Transaction
+
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+    
     /**
      * Display a listing of the resource.
      */
@@ -52,12 +63,37 @@ class TransactionController extends Controller
             $carts = Cart::where([
                 ['user_id', $loggedIn->id],
                 ['selected', true]
-            ]);
+            ])->get();
+
+            $cartIDs = [];  // container for all of the SELECTED Cart's IDs
+            $totalPrice = 0;
+            foreach ($carts as $cart) {
+                array_push($cartIDs, $cart->id);
+                $totalPrice += $cart->price;
+            }
+
+            dd($cartIDs);
+
             // TODO Insert TRX creation by using Cart as its base. Remember to ADD IN TRANSACTION ID for the affected Cart!
+            $trx = Transaction::create([
+                'user_id' => $loggedIn->id,
+                'cart_id' => serialize($cartIDs),
+                'total_price' => $totalPrice,
+                'status' => 'pending',
+            ]);
 
+            // Fill in all the Cart's trx_id with the newly created 'trx' id, this transforms the Carts into a Transaction and won't be selected in the future. Hint: Use Laravel's transform()
             
-
+            
+            collect($carts)->transform(function ($cart) use($trx) {
+                $cart->trx_id = $trx->id;
+                // dd($cart);
+                return $cart;
+            });
+            
+            
             DB::commit();
+
             return response()->json(\Response::success('Transaction creation successful'), 201);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -65,22 +101,11 @@ class TransactionController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Transaction $transaction)
-    {
-        //
+    public function updateTrxStatus(Request $request) {
+        // Changes the Transaction's status to be updated accordingly
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Transaction $transaction)
-    {
-        //
-    }
-
+    
     /**
      * Remove the specified resource from storage.
      */

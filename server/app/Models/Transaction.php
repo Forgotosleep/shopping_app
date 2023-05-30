@@ -13,10 +13,12 @@ class Transaction extends Model
     protected $fillable = [
         // 'unique_id',
         'user_id',
-        'merchant_id',
-        'cart_id',
         'total_price',
         'status',
+    ];
+
+    protected $casts = [
+        'cart_ids' => 'array'  // Array of Cart IDs
     ];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\belongsTo
