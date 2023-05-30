@@ -76,6 +76,8 @@ Route::Group(['namespace' => 'api', 'middleware' => 'auth:sanctum'], function ()
         Route::get('/', [CartController::class, 'index']);
         Route::post('add', [CartController::class, 'store']);
         Route::post('edit', [CartController::class, 'edit']);
+        Route::post('select', [CartController::class, 'selectItem']);
+        Route::post('unselect', [CartController::class, 'unselectItem']);
         Route::delete('/', [CartController::class, 'deleteItem']);
     });
 });

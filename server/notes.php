@@ -33,11 +33,10 @@
                     * Update TRX status
                     * Delete TRX (optional)
                 - Cart (Single Cart per User)  // TODO Make multiple cart implementation
-                    * Fetch Cart by User
-                    * Fetch Cart Detail
-                    * Add Product to Cart
-                    * Remove Product from Cart
-                    * Change Qty of Product in Cart
+                    * Fetch Cart by User -OK!
+                    * Add Product to Cart -OK!
+                    * Remove Product from Cart -OK!
+                    * Change Qty of Product in Cart -OK!
         - Test it out
 
         - Create Job/Scheduler to clean out soft-deleted Cart entries to reduce DB load

@@ -19,21 +19,13 @@ class CartController extends Controller
             $loggedIn = \Auth::user();
             $cart = Cart::where([
                 ['user_id', $loggedIn->id],
-                ['transaction_id', null]  // No transaction ID means the Cart is not finalized into a Transaction yet
+                ['trx_id', null]  // No transaction ID means the Cart is not finalized into a Transaction yet
             ])->get();
             return response()->json(\Response::success('Cart fetch successful', $cart), 200);
         } catch (\Throwable $e) {
             
             return response()->json(\Response::error('Internal Server Error', $e), 500);
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        
     }
 
     /**
@@ -48,15 +40,11 @@ class CartController extends Controller
                 return response()->json(\Response::error('Product not found'), 404);
             }
 
-            // error_log('HERE! 1');
-
             // Checks if product already exists in Cart or not
             $checkCart = Cart::where([
                 ['user_id', $loggedIn->id],
                 ['product_id', $request->idProduct]
             ])->first();
-
-            // dd($checkCart);
 
             if($checkCart) {
                 // TODO Consider returning an error or adding quantity of the existing product in the cart
@@ -119,6 +107,52 @@ class CartController extends Controller
             return response()->json(\Response::error('Internal Server Error', $e), 500);
         }
     }
+
+    public function selectItem(Request $request)
+    {
+        try {
+            $loggedIn = \Auth::user();
+            $cart = Cart::where([
+                ['user_id', $loggedIn->id],
+                ['id', $request->idCart]
+            ])->first();
+            if(!$cart) {
+                return response()->json(\Response::error('Cart not found'), 404);
+            }
+
+            // Changes the specified Cart selected status to 'true'. It will be included when the user's making a transaction.
+            $cart->selected = true;
+            $cart->save();
+            return response()->json(\Response::success('Cart selected successfully', $cart->only('id', 'product_id', 'price', 'quantity', 'selected')), 200);
+            
+        } catch (\Throwable $e) {
+            return response()->json(\Response::error('Internal Server Error', $e), 500);
+        }
+    }
+    
+    public function unselectItem(Request $request)
+    {
+        try {
+            $loggedIn = \Auth::user();
+            $cart = Cart::where([
+                ['user_id', $loggedIn->id],
+                ['id', $request->idCart]
+            ])->first();
+            if(!$cart) {
+                return response()->json(\Response::error('Cart not found'), 404);
+            }
+
+            // Changes the specified Cart selected status to 'false'. It will be excluded when the user's making a transaction.
+            $cart->selected = false;
+            $cart->save();
+            return response()->json(\Response::success('Cart unselected successfully', $cart->only('id', 'product_id', 'price', 'quantity', 'selected')), 200);
+            
+        } catch (\Throwable $e) {
+            return response()->json(\Response::error('Internal Server Error', $e), 500);
+        }
+    }
+
+
 
     public function deleteItem(Request $request)
     {

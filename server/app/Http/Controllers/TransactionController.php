@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Merchant;
 use App\Models\Transaction;
+use App\Models\Cart;
 
 class TransactionController extends Controller
 {
@@ -45,9 +46,13 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         try {
-            DB::beginTransaction();
             $loggedIn = Auth::user();
 
+            DB::beginTransaction();
+            $carts = Cart::where([
+                ['user_id', $loggedIn->id],
+                ['selected', true]
+            ]);
             // TODO Insert TRX creation by using Cart as its base. Remember to ADD IN TRANSACTION ID for the affected Cart!
 
             
