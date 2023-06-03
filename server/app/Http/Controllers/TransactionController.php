@@ -29,8 +29,8 @@ class TransactionController extends Controller
     {
         try {
             $loggedIn = Auth::user();
-            $trx = Transaction::where('user_id', $loggedIn->id)->get();
-            return response()->json(\Response::success('Transaction fetch successful', $trx->only('id', 'user_id', 'merchant_id', 'total_price', 'status')), 200);
+            $trx = Transaction::where('user_id', $loggedIn->id)->get(['id', 'user_id', 'total_price', 'cart_ids', 'status']);
+            return response()->json(\Response::success('Transaction fetch successful', $trx), 200);
         } catch (\Throwable $e) {
             
             return response()->json(\Response::error('Internal Server Error', $e), 500);
@@ -62,7 +62,8 @@ class TransactionController extends Controller
             DB::beginTransaction();
             $carts = Cart::where([
                 ['user_id', $loggedIn->id],
-                ['selected', true]
+                ['selected', true],
+                ['trx_id', null]
             ])->get();
 
             $cartIDs = [];  // container for all of the SELECTED Cart's IDs
@@ -72,31 +73,26 @@ class TransactionController extends Controller
                 $totalPrice += $cart->price;
             }
 
-            dd($cartIDs);
-
             // TODO Insert TRX creation by using Cart as its base. Remember to ADD IN TRANSACTION ID for the affected Cart!
             $trx = Transaction::create([
                 'user_id' => $loggedIn->id,
-                'cart_id' => serialize($cartIDs),
+                'cart_ids' => json_encode($cartIDs),
                 'total_price' => $totalPrice,
                 'status' => 'pending',
             ]);
 
-            // Fill in all the Cart's trx_id with the newly created 'trx' id, this transforms the Carts into a Transaction and won't be selected in the future. Hint: Use Laravel's transform()
-            
-            
+            // Fill in all the Cart's trx_id with the newly created 'trx' id, this transforms the Carts into a Transaction and won't be selected in the future.
             collect($carts)->transform(function ($cart) use($trx) {
                 $cart->trx_id = $trx->id;
-                // dd($cart);
-                return $cart;
+                $cart->update();
             });
-            
-            
-            DB::commit();
 
-            return response()->json(\Response::success('Transaction creation successful'), 201);
+            DB::commit();  // Finalizes the TRX Creation & Cart update
+
+            return response()->json(\Response::success('Transaction creation successful', $trx), 201);
+
         } catch (\Throwable $e) {
-            DB::rollBack();
+            DB::rollBack();  // Revert changes if something goes wrong
             return response()->json(\Response::error('Internal Server Error', $e), 500);
         }
     }

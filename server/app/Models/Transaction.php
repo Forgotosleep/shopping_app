@@ -14,6 +14,7 @@ class Transaction extends Model
         // 'unique_id',
         'user_id',
         'total_price',
+        'cart_ids',
         'status',
     ];
 

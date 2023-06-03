@@ -43,7 +43,8 @@ class CartController extends Controller
             // Checks if product already exists in Cart or not
             $checkCart = Cart::where([
                 ['user_id', $loggedIn->id],
-                ['product_id', $request->idProduct]
+                ['product_id', $request->idProduct],
+                ['trx_id', null]
             ])->first();
 
             if($checkCart) {
@@ -66,7 +67,11 @@ class CartController extends Controller
                 'price' => ($request->quantity * $product->price),
             ]);
 
-            $currentCart = $cart->where('user_id', $loggedIn->id)->get(['id', 'merchant_id', 'product_id', 'quantity', 'price', 'selected']);  // Gets User's current Cart
+            $currentCart = Cart::where([
+                ['user_id', $loggedIn->id],
+                ['selected', true],
+                ['trx_id', null]  // No transaction ID means the Cart is not finalized into a Transaction yet
+            ])->get(['id', 'merchant_id', 'product_id', 'quantity', 'price', 'selected']);  // Gets User's current Cart
             return response()->json(\Response::success('Add product to cart successful', $currentCart), 201);
 
         } catch (\Throwable $e) {
