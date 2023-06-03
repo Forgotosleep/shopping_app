@@ -13,24 +13,31 @@ class TransactionController extends Controller
 {
 
     function displayProducts($trxId) {
-        try {
-            
-            // TODO Fetches Products grouped by Merchants in a Transaction
+        /* This function takes a trxId and returns an array of product that is contained in that particular TRX. If the TRX does not exist, it returns an empty array */
+        $data = [];
+        $carts = Cart::where('trx_id', $trxId)->get(['id', 'product_id']);
 
-        } catch (\Throwable $th) {
-            //throw $th;
+        if(!empty($carts)) {
+            foreach ($carts as $cart) {
+                array_push($data, collect($cart->product)->except('deleted_at', 'created_at', 'updated_at'));
+            }            
         }
+
+        return $data;
     }
     
-    /**
-     * Display a listing of the resource.
-     */
     public function listByUser()
     {
         try {
             $loggedIn = Auth::user();
-            $trx = Transaction::where('user_id', $loggedIn->id)->get(['id', 'user_id', 'total_price', 'cart_ids', 'status']);
-            return response()->json(\Response::success('Transaction fetch successful', $trx), 200);
+            $trxs = Transaction::where('user_id', $loggedIn->id)->get(['id', 'user_id', 'total_price', 'cart_ids', 'status']);
+            if(!empty($trxs)) {
+                collect($trxs)->map(function($trx) {
+                    $trx->products = self::displayProducts($trx->id);
+                    return $trx;
+                });
+            }
+            return response()->json(\Response::success('Transaction fetch successful', $trxs), 200);
         } catch (\Throwable $e) {
             
             return response()->json(\Response::error('Internal Server Error', $e), 500);
@@ -99,14 +106,5 @@ class TransactionController extends Controller
 
     public function updateTrxStatus(Request $request) {
         // Changes the Transaction's status to be updated accordingly
-    }
-
-    
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Transaction $transaction)
-    {
-        //
     }
 }

@@ -54,6 +54,7 @@ Route::Group(['namespace' => 'api', 'middleware' => 'auth:sanctum'], function ()
     // Transaction Routes
     Route::Group(['prefix' => 'transaction'], function() {
         Route::get('/', [TransactionController::class, 'listByUser']);
+        // Route::get('/{trxId}', [TransactionController::class, 'displayProducts']);
         Route::get('list-merchant', [TransactionController::class, 'listByMerchant']);
         Route::post('new', [TransactionController::class, 'store']);
         Route::post('update', [TransactionController::class, 'update']);
